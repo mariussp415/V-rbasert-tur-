@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Weather Tour Recommender</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <main class="app-shell">
+        <header class="hero reveal">
+            <h1>Værbasert turanbefaler</h1>
+            <p class="hero-sub">Finn beste tur for dagen basert på vær og posisjon.</p>
+        </header>
+
+        <form action="/recommend" method="post" class="search-form reveal">
+            <label for="location">Enter your location (city):</label>
+            <input type="text" id="location" name="location" required>
+            <button type="submit">Get Recommendation</button>
+        </form>
+    {% if weather_06_12 %}
+    <div class="weather reveal card">
+        <h2>Værmelding kl. 06-12</h2>
+        <p>{{ weather_06_12|replace('\n', '<br>')|safe }}</p>
+        {% if weather_full_day %}
+        <button id="toggle-forecast" class="ghost-btn">Vis mer</button>
+        <div id="forecast-content" class="forecast-panel">
+            <p>{{ weather_full_day|replace('\n', '<br>')|safe }}</p>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+    {% if recommendation %}
+    <div class="recommendation reveal card">
+        <h2>AI Recommendations</h2>
+        <p>{{ recommendation|replace('\n\n', '</p><p>')|safe }}</p>
+
+        {% if tours_json %}
+        <div class="map-section card">
+            <h2>Velg tur og vis vei</h2>
+            <div class="map-controls">
+                <select id="tour-select">
+                    <option value="">-- Velg en tur --</option>
+                </select>
+                <button id="show-route-btn" disabled>Vis rute</button>
+                <a id="gmaps-link" href="#" target="_blank" style="display:none;" class="gmaps-btn">Åpne i Google Maps</a>
+            </div>
+            {% if not google_maps_api_key %}
+            <p class="map-warning">Kartet trenger `GOOGLE_MAPS_API_KEY` i `.env` for å vises. Lenken til Google Maps fungerer fortsatt.</p>
+            {% endif %}
+            <div id="map"></div>
+            <p id="location-status" class="location-status">Henter posisjon...</p>
+        </div>
+        <script>
+            window.TOURS_DATA = {{ tours_json|safe }};
+            window.GOOGLE_MAPS_ENABLED = {{ 'true' if google_maps_api_key else 'false' }};
+        </script>
+        {% endif %}
+
+    </div>
+    {% endif %}
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    {% if google_maps_api_key %}
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}&callback=initGoogleMap"></script>
+    {% endif %}
+    </main>
+</body>
+</html>

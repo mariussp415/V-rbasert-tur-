@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+.venv/
+venv/
+
+# Environment secrets
+.env
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+
+# Temporary local scripts/logs
+*_lookup.txt
+_coord_check.py
+_overpass_check.py
+_overpass_peaks.py
+_overpass_ping.py
+check_coords.py
